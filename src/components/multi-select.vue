@@ -60,7 +60,6 @@ export default defineComponent({
     methods:{
         update(){
             this.form_data = this.data
-            console.log(this.data)
         },
         addParameter(data, index){
             const object = {
