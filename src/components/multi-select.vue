@@ -8,14 +8,14 @@
                         <option :value="data.id" v-for="data in list_data" :key="data.id">{{data.name}}</option>
                     </select>
                     <button 
-                        class="btn btn-danger" 
+                        class="btn danger" 
                         type="button"
                         @click="removeParameter(veb_parameters)"
                     >
                         <i class="fa fa-trash"/>
                     </button>
                     <button 
-                        class="btn btn-success" 
+                        class="btn success" 
                         type="button"
                         @click="addParameter(veb_parameters, index)"
                         v-if="index == filteredData.length - 1"
@@ -29,7 +29,7 @@
             <div v-if="data.filter(item=>item.delete != 1).length == 0" style="width:100%">
                 <button 
                 style=""
-                    class="btn btn-success" 
+                    class="btn success" 
                     type="button"
                     @click="addParameter(veb, 0)"
                 >
@@ -58,9 +58,6 @@ export default defineComponent({
         }
     },
     methods:{
-        update(){
-            this.form_data = this.data
-        },
         addParameter(data, index){
             const object = {
             }
@@ -87,3 +84,8 @@ export default defineComponent({
     }
 })
 </script>
+<style scoped>
+.form-group{
+    margin-bottom: 10px;
+}
+</style>

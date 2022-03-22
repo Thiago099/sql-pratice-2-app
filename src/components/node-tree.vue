@@ -55,9 +55,13 @@ export default defineComponent({
     },
     methods:{
         abstraction_filter(item){
+            if(item.delete == true)
+            {
+                return false
+            }
             if(this.filter == null)
             {
-                return item.generalization.length == 0
+                return item.generalization.length == 0 
             }
             for(const i in item.generalization)
             {
@@ -68,14 +72,35 @@ export default defineComponent({
             }
             return false
         },
+        both_filter(item){
+            if(this.filter == null)
+            {
+                return item.generalization.length == 0 && item.containing_read_only.length == 0
+            }
+            for(const i in item.generalization)
+            {
+                if(item.generalization[i].id_entity_generic == this.filter)
+                {
+                    return true
+                }
+            }
+            for(const i in item.containing_read_only)
+            {
+                if(item.containing_read_only[i].id_entity_container == this.filter)
+                {
+                    return true
+                }
+            }
+            return false
+        },
         containing_filter(item){
             if(this.filter == null)
             {
-                return item.containing.length == 0
+                return item.containing_read_only.length == 0
             }
-            for(const i in item.containing)
+            for(const i in item.containing_read_only)
             {
-                if(item.containing[i].id_entity_container == this.filter)
+                if(item.containing_read_only[i].id_entity_container == this.filter)
                 {
                     return true
                 }

@@ -107,3 +107,29 @@ label{
 .inert{
     color:var(--color)
 }
+.btn{
+    color:white;
+    border-color: var(--bright);
+    background-color: var(--dark);
+}
+.btn:hover{
+    background-color: var(--color);
+    color:white
+}
+.btn-medium{
+    background-color: var(--medium);
+    border-color: var(--bright);
+}
+.btn .spaced{
+    margin-right: 3px;
+}
+.btn:hover{
+    border-color: var(--bright);
+    background-color: var(--color);
+}
+.btn:focus{
+    border-color: var(--bright);
+    background-color: var(--medium);
+    color:white;
+}
+
