@@ -9,14 +9,6 @@
         class="hover" 
         :class="{'success':filter_function=='abstraction_filter','info':filter_function == 'containing_filter'}" 
         @click="$emit('action',item)">{{ item.name }}</span>
-        <!-- <node-tree 
-            :data="data" 
-            :filter="item.id" 
-            :distance="distance+1" 
-            @action="$emit('action',$event)"
-            :filter_function="filter_function"
-        >
-        </node-tree> -->
     </div>
 </template>
 <script>
