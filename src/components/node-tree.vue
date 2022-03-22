@@ -72,7 +72,7 @@ export default defineComponent({
             }
             if(filter == null)
             {
-                return item.generalization.length == 0 
+                return item.generalization?.length == 0 
             }
             for(const i in item.generalization)
             {
@@ -86,7 +86,7 @@ export default defineComponent({
         containing_filter(item, filter){
             if(filter == null)
             {
-                return item.containing_read_only.length == 0
+                return item.containing_read_only?.length == 0
             }
             for(const i in item.containing_read_only)
             {

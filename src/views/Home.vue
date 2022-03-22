@@ -1,5 +1,5 @@
 <template>
-  <div class="container" :key="reativity">
+  <div class="container" :key="reactivity">
     <div class="row">
     <div class="col-2">
     <node-tree 
@@ -20,7 +20,7 @@
       <div class="col-8">
         <div class="card">
           <div class="card-body">
-            <!-- mensage if there is no selection -->
+            <!-- message if there is no selection -->
             <div v-if="!data">
               <p style="text-align:center">Select a entity</p>
             </div>
@@ -123,7 +123,7 @@ export default defineComponent({
       entity:[] as entity[],
       entity_name:{} as Record<string, any>,
       grouped_entities:{} as Record<string, entity>,
-      reativity:0,
+      reactivity:0,
     }
   },
   async created(){
@@ -145,7 +145,7 @@ export default defineComponent({
       },
     handleSelection(item:any){
       this.data = item;
-      this.reativity++
+      this.reactivity++
     },
     handleSave()
     {
