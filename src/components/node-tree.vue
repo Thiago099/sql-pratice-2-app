@@ -1,26 +1,30 @@
 <template>
-    <div v-for="item in displayData" :key="item.id">
+
+    <div v-for="{item, depth} in displayData" :key="item.id">
         <div 
-            v-html="tabs" 
+            v-html="tabs(depth)" 
             style="display:inline"
         ></div> 
-        <span class="hover" :class="{'success':filter_function=='abstraction_filter','info':filter_function == 'containing_filter'}" @click="$emit('action',item)">{{ item.name }}</span>
-        <node-tree 
+        <span 
+        class="hover" 
+        :class="{'success':filter_function=='abstraction_filter','info':filter_function == 'containing_filter'}" 
+        @click="$emit('action',item)">{{ item.name }}</span>
+        <!-- <node-tree 
             :data="data" 
             :filter="item.id" 
             :distance="distance+1" 
             @action="$emit('action',$event)"
             :filter_function="filter_function"
         >
-        </node-tree>
+        </node-tree> -->
     </div>
 </template>
 <script>
 import { defineComponent } from 'vue'
-import nodeTree from './node-tree.vue'
+// import nodeTree from './node-tree.vue'
 export default defineComponent({
     components:{
-        nodeTree
+        // nodeTree
     },
     props:{
         data:{
@@ -42,65 +46,59 @@ export default defineComponent({
     },
     computed:{
         displayData(){
-            return this.data.filter(this[this.filter_function])
+            return this.get_tree()
         },
-        tabs(){
+        
+    },
+    methods:{
+        tabs(depth){
             var result = ''
-            for(let i = 0; i < this.distance; i++)
+            for(let i = 0; i < depth; i++)
             {
                 result += '&nbsp;&nbsp;&nbsp;&nbsp;'
             }
             return result;
-        }
-    },
-    methods:{
-        abstraction_filter(item){
+        },
+        get_tree(depth = 0, filter = null){
+            var result = []
+            for(const i in this.data)
+            {
+                if(this[this.filter_function](this.data[i],filter))
+                {
+                    const children = this.get_tree(depth+1, this.data[i].id)
+                    result.push({depth,item:this.data[i]})
+                    result = result.concat(children)   
+                }
+            }
+            console.log(result)
+            return result;
+        },
+        abstraction_filter(item, filter){
             if(item.delete == true)
             {
                 return false
             }
-            if(this.filter == null)
+            if(filter == null)
             {
                 return item.generalization.length == 0 
             }
             for(const i in item.generalization)
             {
-                if(item.generalization[i].id_entity_generic == this.filter)
+                if(item.generalization[i].id_entity_generic == filter)
                 {
                     return true
                 }
             }
             return false
         },
-        both_filter(item){
-            if(this.filter == null)
-            {
-                return item.generalization.length == 0 && item.containing_read_only.length == 0
-            }
-            for(const i in item.generalization)
-            {
-                if(item.generalization[i].id_entity_generic == this.filter)
-                {
-                    return true
-                }
-            }
-            for(const i in item.containing_read_only)
-            {
-                if(item.containing_read_only[i].id_entity_container == this.filter)
-                {
-                    return true
-                }
-            }
-            return false
-        },
-        containing_filter(item){
-            if(this.filter == null)
+        containing_filter(item, filter){
+            if(filter == null)
             {
                 return item.containing_read_only.length == 0
             }
             for(const i in item.containing_read_only)
             {
-                if(item.containing_read_only[i].id_entity_container == this.filter)
+                if(item.containing_read_only[i].id_entity_container == filter)
                 {
                     return true
                 }
@@ -110,3 +108,8 @@ export default defineComponent({
     }
 })
 </script>
+<style scoped>
+.invisible{
+    color:transparent
+}
+</style>
