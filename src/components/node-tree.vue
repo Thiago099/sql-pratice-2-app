@@ -83,7 +83,7 @@ export default defineComponent({
                     const children = this.get_tree(depth+1, this.data[i].id)
                     if(this.displayed[this.data[i].id] == undefined)
                     {
-                        this.displayed[this.data[i].id] = true
+                        this.displayed[this.data[i].id] = false
                     }
                     if(depth != 0 || children.length != 0)
                     {
