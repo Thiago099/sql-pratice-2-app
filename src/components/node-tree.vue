@@ -26,6 +26,7 @@
 </template>
 <script>
 import { defineComponent } from 'vue'
+import { displayed } from './displayed.ts'
 // import nodeTree from './node-tree.vue'
 export default defineComponent({
     components:{
@@ -33,7 +34,7 @@ export default defineComponent({
     },
     data(){
         return{
-            displayed:[],
+            displayed
         }
     },
     props:{
@@ -80,7 +81,10 @@ export default defineComponent({
                 if(this[this.filter_function](this.data[i],filter))
                 {
                     const children = this.get_tree(depth+1, this.data[i].id)
-                    this.displayed[this.data[i].id] = true
+                    if(this.displayed[this.data[i].id] == undefined)
+                    {
+                        this.displayed[this.data[i].id] = true
+                    }
                     if(depth != 0 || children.length != 0)
                     {
                         result.push({depth,item:this.data[i],children:children.length,parent:filter})
