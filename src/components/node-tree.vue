@@ -26,7 +26,7 @@
 </template>
 <script>
 import { defineComponent } from 'vue'
-import { displayed } from './displayed.ts'
+import { displayed_generalization, displayed_containing } from '@/global/displayed_persistent.ts'
 // import nodeTree from './node-tree.vue'
 export default defineComponent({
     components:{
@@ -34,7 +34,7 @@ export default defineComponent({
     },
     data(){
         return{
-            displayed
+            displayed:this.filter_function == 'abstraction_filter' ? displayed_generalization : displayed_containing,
         }
     },
     props:{
