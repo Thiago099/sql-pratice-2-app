@@ -6,19 +6,19 @@
             <div 
                 v-html="tabs(depth)" 
                 style="display:inline"
-                v-if="is_collapsed(parent)"
+                v-if="is_displayed(parent)"
             ></div> 
             <i 
-            v-if="is_collapsed(parent)"
+            v-if="is_displayed(parent)"
             class="fa warning hover" 
-            :class="{'fa-caret-down':collapsed[item.id],'fa-caret-right':!collapsed[item.id],'invisible':children == 0 || children == undefined}" 
+            :class="{'fa-caret-down':displayed[item.id],'fa-caret-right':!displayed[item.id],'invisible':children == 0 || children == undefined}" 
             
             style="margin-right:5px"
-            @click="collapsed[item.id] = !collapsed[item.id]"
+            @click="displayed[item.id] = !displayed[item.id]"
             ></i>
             <span 
             class="hover" 
-            v-if="is_collapsed(parent)"
+            v-if="is_displayed(parent)"
             :class="{'success':filter_function=='abstraction_filter','info':filter_function == 'containing_filter'}" 
             @click="$emit('action',item)">{{ item.name }}</span>
         </div>
@@ -33,7 +33,7 @@ export default defineComponent({
     },
     data(){
         return{
-            collapsed:[],
+            displayed:[],
         }
     },
     props:{
@@ -80,7 +80,7 @@ export default defineComponent({
                 if(this[this.filter_function](this.data[i],filter))
                 {
                     const children = this.get_tree(depth+1, this.data[i].id)
-                    this.collapsed[this.data[i].id] = true
+                    this.displayed[this.data[i].id] = true
                     if(depth != 0 || children.length != 0)
                     {
                         result.push({depth,item:this.data[i],children:children.length,parent:filter})
@@ -157,32 +157,32 @@ export default defineComponent({
             }
             return false
         },
-        is_collapsed(parent)
+        is_displayed(parent)
         {
             const parent_obj = this.displayData.find(item => item.item.id == parent)
             if(parent == null)
             {
                 return true
             }
-            const stack_result = this.is_collapsed(parent_obj.parent)
+            const stack_result = this.is_displayed(parent_obj.parent)
             if(stack_result == true)
             {
-                return this.collapsed[parent]
+                return this.displayed[parent]
             }
             return false
         },
         collapse_all()
         {
-            for(const i in this.collapsed)
+            for(const i in this.displayed)
             {
-                this.collapsed[i] = false
+                this.displayed[i] = false
             }
         },
         expand_all()
         {
-            for(const i in this.collapsed)
+            for(const i in this.displayed)
             {
-                this.collapsed[i] = true
+                this.displayed[i] = true
             }
         }
     }
