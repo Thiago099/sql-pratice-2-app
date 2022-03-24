@@ -24,7 +24,7 @@
             <div v-if="!data">
               <p style="text-align:center">Select a entity</p>
             </div>
-            <div v-else>
+            <div v-else class="row">
               <input-container name= "Name">
                 <input 
                 type="text" 
@@ -33,23 +33,31 @@
                 v-model="data.name"
                 >
               </input-container>
+              <!-- <input-container name= "Type" >
+              <select id="Type" v-model="data.type" class="form-select">
+                <option value="enum">enum</option>
+                <option value="number">number</option>
+                <option value="text">text</option>
+              </select>
+              </input-container> -->
               <multi-select 
+                  class="col-md-6 col-sm-12"
                   :data="data.generalization" 
-                  @data="data.generalization = $event.target.value"
+                  @data="data.generalization = $event"
                   label="Generalization"
                   color="green"
                   field="id_entity_generic"
-                  ref="generalizationComponent"
                   :list_data="entity"
                   :name_source="entity_name"
               >
               </multi-select>
               <multi-select 
+                  class="col-md-6 col-sm-12"
                   :data="data.containing" 
-                  @data="data.containing = $event.target.value"
-                  label="Containing"
+                  @data="data.containing = $event"
+                  label="Container"
                   color="cyan"
-                  field="id_entity_content"
+                  field="id_entity_container"
                   :list_data="entity"
                   :name_source="entity_name"
               >
@@ -122,22 +130,11 @@ export default defineComponent({
       data:null as any,
       entity:[] as entity[],
       entity_name:{} as Record<string, any>,
-      grouped_entities:{} as Record<string, entity>,
       reactivity:0,
     }
   },
-  async created(){
-    this.entity = await new Promise(resolve => axios('entity','get', 
-    {
-      callback(result:entity[]){
-        resolve(result);
-      }
-    }))
-    for(const i in this.entity){
-      this.entity_name[this.entity[i].id] = this.entity[i].name;
-    }
-    this.entity_name[0] = 'root';
-    this.grouped_entities = this.groupBy(this.entity, (item:entity) => (item.generalization[0] || {id_entity_generic:'0'}).id_entity_generic);
+  created(){
+    this.load()
   },
   methods:{
     groupBy(x:any, f:any) {
@@ -161,6 +158,7 @@ export default defineComponent({
           axios('entity/','post',{data:this.entity[i]})
         }
       }
+      this.load()
     },
     handleNew()
     {
@@ -173,11 +171,30 @@ export default defineComponent({
       }
       this.entity.push(entity)
       this.data = entity
+      this.reactivity++
     },
     handleDelete()
     {
       this.data.delete = true
-    }
+    },
+    async load(){
+      this.entity = await new Promise(resolve => axios('entity','get', 
+      {
+        callback(result:entity[]){
+          resolve(result);
+        }
+      }))
+      for(const i in this.entity){
+        this.entity_name[this.entity[i].id] = this.entity[i].name;
+      }
+      this.entity_name[0] = 'root';
+    },
+  },
+  computed:{
+    sorted_data(){
+      const entity = JSON.parse(JSON.stringify(this.entity))
+      return entity.sort((a:entity,b:entity)=>a.name.localeCompare(b.name))
+    },
   }
 }) 
 </script>

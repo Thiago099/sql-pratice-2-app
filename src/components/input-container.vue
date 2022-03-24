@@ -91,4 +91,7 @@ export default defineComponent({
 .none{
     color:transparent
 }
+.none::selection {
+  background: transparent;
+}
 </style>

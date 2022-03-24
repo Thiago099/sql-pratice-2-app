@@ -34,6 +34,10 @@ export default defineComponent({
         filter_function:{
             type:String,
             default:null
+        },
+        empety:{
+            type:Boolean,
+            default:false
         }
     },
     computed:{
@@ -58,39 +62,76 @@ export default defineComponent({
                 if(this[this.filter_function](this.data[i],filter))
                 {
                     const children = this.get_tree(depth+1, this.data[i].id)
-                    result.push({depth,item:this.data[i]})
-                    result = result.concat(children)   
+                    if(depth != 0 || children.length != 0)
+                    {
+                        result.push({depth,item:this.data[i]})
+                        result = result.concat(children)   
+                    }
                 }
             }
-            console.log(result)
+            // show illegal nodes that whuld not otherwise apear
+            if(depth == 0)
+            {
+                for(const i in this.data)
+                {
+                    if
+                    (
+                           this.data[i].generalization.filter(item => !item.delete && item.id_entity_generic != null).length == 0 
+                        && this.data[i].containing.filter(item => !item.delete && item.id_entity_container != null).length == 0
+                        && this.data.filter(item => 
+                              !item.delete 
+                            && item.generalization.filter(item => 
+                                      !item.delete 
+                                    && item.id_entity_generic == this.data[i].id
+                                    ).length != 0
+                                ).length == 0
+                        && this.data.filter(item => 
+                                  !item.delete 
+                                && item.containing.filter(item => 
+                                      !item.delete 
+                                    && item.id_entity_container == this.data[i].id
+                                    ).length != 0
+                                ).length == 0
+                    )
+                    {
+                        result.push({depth,item:this.data[i]})
+                    }
+                }
+            }
             return result;
         },
-        abstraction_filter(item, filter){
+        abstraction_filter(item, filter)
+        {
             if(item.delete == true)
             {
                 return false
             }
             if(filter == null)
             {
-                return item.generalization?.length == 0 
+                return item.generalization?.filter(item => item.id_entity_generic != null && !item.delete)?.length == 0 
             }
             for(const i in item.generalization)
             {
-                if(item.generalization[i].id_entity_generic == filter)
+                if(item.generalization[i].id_entity_generic == filter && !item.generalization[i].delete)
                 {
                     return true
                 }
             }
             return false
         },
-        containing_filter(item, filter){
+        containing_filter(item, filter)
+        {
+            if(item.delete == true)
+            {
+                return false
+            }
             if(filter == null)
             {
-                return item.containing_read_only?.length == 0
+                return item.containing?.filter(item => item.id_entity_container != null && !item.delete)?.length == 0
             }
-            for(const i in item.containing_read_only)
+            for(const i in item.containing)
             {
-                if(item.containing_read_only[i].id_entity_container == filter)
+                if(item.containing[i].id_entity_container == filter && !item.containing[i].delete)
                 {
                     return true
                 }

@@ -86,15 +86,19 @@ label{
 }
 .danger{
     --color: rgb(255,50,50);
+    --color-background: rgb(200,50,50);
 }	
 .success{
     --color: rgb(50,170,50);
+    --color-background: rgb(50,120,50);
 }
 .info{
     --color: rgb(50, 170, 190);
+    --color-background: rgb(50, 100, 150);
 }
 .warning{
     --color: rgb(255, 170, 50);
+    --color-background: rgb(255, 170, 50);
 }
 .hover{
     transition: all .2s ease-in-out;
@@ -112,10 +116,7 @@ label{
     border-color: var(--bright);
     background-color: var(--dark);
 }
-.btn:hover{
-    background-color: var(--color);
-    color:white
-}
+
 .btn-medium{
     background-color: var(--medium);
     border-color: var(--bright);
@@ -125,7 +126,8 @@ label{
 }
 .btn:hover{
     border-color: var(--bright);
-    background-color: var(--color);
+    color:white;
+    background-color: var(--color-background);
 }
 .btn:focus{
     border-color: var(--bright);

@@ -5,7 +5,7 @@
                 <div class="input-group">
                     <input type="text" class="form-control" :class="color" v-if="show_text" v-model="veb_parameters.name"/>
                     <select v-model="veb_parameters[field]" class="form-select">  
-                        <option :value="data.id" v-for="data in list_data" :key="data.id">{{data.name}}</option>
+                        <option :value="data.id" v-for="data in list_data.filter(item => !item.delete)" :key="data.id" :disabled="data.id == 0" :style="data.id == 0 ? 'color:var(--bright)':''">{{data.name}}</option>
                     </select>
                     <button 
                         class="btn danger" 
@@ -25,7 +25,6 @@
                     
                 </div>
             </div>
-            
             <div v-if="data.filter(item=>item.delete != 1).length == 0" style="width:100%">
                 <button 
                 style=""
@@ -35,7 +34,6 @@
                 >
                     <i class="fa fa-plus"/>
                 </button>
-                
             </div>
         </div>
 </template>
