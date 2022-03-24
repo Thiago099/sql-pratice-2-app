@@ -1,14 +1,27 @@
 <template>
-
-    <div v-for="{item, depth} in displayData" :key="item.id">
-        <div 
-            v-html="tabs(depth)" 
-            style="display:inline"
-        ></div> 
-        <span 
-        class="hover" 
-        :class="{'success':filter_function=='abstraction_filter','info':filter_function == 'containing_filter'}" 
-        @click="$emit('action',item)">{{ item.name }}</span>
+    <div>
+        <i class="fa fa-minus-square hover warning icon" @click="collapse_all()"></i>
+        <i class="fa fa-plus-square hover warning icon" @click="expand_all()"></i>
+        <div v-for="{item, depth,children, parent} in displayData" :key="item.id">
+            <div 
+                v-html="tabs(depth)" 
+                style="display:inline"
+                v-if="is_collapsed(parent)"
+            ></div> 
+            <i 
+            v-if="is_collapsed(parent)"
+            class="fa warning hover" 
+            :class="{'fa-caret-down':collapsed[item.id],'fa-caret-right':!collapsed[item.id],'invisible':children == 0 || children == undefined}" 
+            
+            style="margin-right:5px"
+            @click="collapsed[item.id] = !collapsed[item.id]"
+            ></i>
+            <span 
+            class="hover" 
+            v-if="is_collapsed(parent)"
+            :class="{'success':filter_function=='abstraction_filter','info':filter_function == 'containing_filter'}" 
+            @click="$emit('action',item)">{{ item.name }}</span>
+        </div>
     </div>
 </template>
 <script>
@@ -17,6 +30,11 @@ import { defineComponent } from 'vue'
 export default defineComponent({
     components:{
         // nodeTree
+    },
+    data(){
+        return{
+            collapsed:[],
+        }
     },
     props:{
         data:{
@@ -62,9 +80,10 @@ export default defineComponent({
                 if(this[this.filter_function](this.data[i],filter))
                 {
                     const children = this.get_tree(depth+1, this.data[i].id)
+                    this.collapsed[this.data[i].id] = true
                     if(depth != 0 || children.length != 0)
                     {
-                        result.push({depth,item:this.data[i]})
+                        result.push({depth,item:this.data[i],children:children.length,parent:filter})
                         result = result.concat(children)   
                     }
                 }
@@ -137,6 +156,34 @@ export default defineComponent({
                 }
             }
             return false
+        },
+        is_collapsed(parent)
+        {
+            const parent_obj = this.displayData.find(item => item.item.id == parent)
+            if(parent == null)
+            {
+                return true
+            }
+            const stack_result = this.is_collapsed(parent_obj.parent)
+            if(stack_result == true)
+            {
+                return this.collapsed[parent]
+            }
+            return false
+        },
+        collapse_all()
+        {
+            for(const i in this.collapsed)
+            {
+                this.collapsed[i] = false
+            }
+        },
+        expand_all()
+        {
+            for(const i in this.collapsed)
+            {
+                this.collapsed[i] = true
+            }
         }
     }
 })
@@ -144,5 +191,21 @@ export default defineComponent({
 <style scoped>
 .invisible{
     color:transparent
+}
+.invisible::selection{
+    color:transparent;
+}
+::selection{
+    background:transparent;
+}
+.fa-caret-right{
+    margin-left: 3.5px;
+    margin-right: 3.5px;
+}
+.fa{
+    transition: none;
+}
+.icon{
+    margin:3px
 }
 </style>
