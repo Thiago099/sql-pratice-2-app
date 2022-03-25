@@ -12,7 +12,6 @@
             v-if="is_displayed(parent)"
             class="fa warning hover" 
             :class="{'fa-caret-down':displayed[item.id],'fa-caret-right':!displayed[item.id],'invisible':children == 0 || children == undefined}" 
-            
             style="margin-right:5px"
             @click="displayed[item.id] = !displayed[item.id]"
             ></i>
@@ -20,7 +19,12 @@
             class="hover" 
             v-if="is_displayed(parent)"
             :class="{'success':filter_function=='abstraction_filter','info':filter_function == 'containing_filter'}" 
-            @click="$emit('action',item)">{{ item.name }}</span>
+            @click="$emit('action',item)" 
+            draggable="true"
+            @dragstart="function drag(ev){
+                ev.dataTransfer.setData('text', item.id)
+            }"
+            >{{ item.name }}</span>
         </div>
     </div>
 </template>
@@ -99,6 +103,7 @@ export default defineComponent({
                 {
                     if
                     (
+                        !this.data[i].delete &&
                            this.data[i].generalization.filter(item => !item.delete && item.id_entity_generic != null).length == 0 
                         && this.data[i].containing.filter(item => !item.delete && item.id_entity_container != null).length == 0
                         && this.data.filter(item => 
@@ -150,11 +155,11 @@ export default defineComponent({
             }
             if(filter == null)
             {
-                return item.containing?.filter(item => item.id_entity_container != null && !item.delete)?.length == 0
+                return item.containing_read_only?.filter(item => item.id_entity_container != null && !item.delete)?.length == 0
             }
-            for(const i in item.containing)
+            for(const i in item.containing_read_only)
             {
-                if(item.containing[i].id_entity_container == filter && !item.containing[i].delete)
+                if(item.containing_read_only[i].id_entity_container == filter && !item.containing_read_only[i].delete)
                 {
                     return true
                 }
@@ -203,8 +208,8 @@ export default defineComponent({
     background:transparent;
 }
 .fa-caret-right{
-    margin-left: 3.5px;
-    margin-right: 3.5px;
+    margin-left: 3.45px;
+    margin-right: 3.45px;
 }
 .fa{
     transition: none;

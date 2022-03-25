@@ -54,10 +54,10 @@
               <multi-select 
                   class="col-md-6 col-sm-12"
                   :data="data.containing" 
-                  @data="data.containing = $event"
+                  @data="handleContainerChanged($event)"
                   label="Container"
                   color="cyan"
-                  field="id_entity_container"
+                  field="id_entity_content"
                   :list_data="entity"
                   :name_source="entity_name"
               >
@@ -109,11 +109,16 @@ interface containing{
   id:number,
   id_entity_content:number
 }
+interface containing_read_only{
+  id:number,
+  id_entity_container:number
+}
 interface entity{
   id: number;
   name: string;
   generalization: generalization[]
   containing: containing[]
+  containing_read_only: containing_read_only[]
   delete:boolean
 
 }
@@ -154,11 +159,11 @@ export default defineComponent({
         }
         else
         {
-          console.log(this.entity[i])
           axios('entity/','post',{data:this.entity[i]})
         }
       }
       this.load()
+      this.data = null
     },
     handleNew()
     {
@@ -167,6 +172,7 @@ export default defineComponent({
         name:'',
         generalization:[],
         containing:[],
+        containing_read_only:[],
         delete:false
       }
       this.entity.push(entity)
@@ -187,15 +193,26 @@ export default defineComponent({
       for(const i in this.entity){
         this.entity_name[this.entity[i].id] = this.entity[i].name;
       }
+      this.entity.sort((a:entity,b:entity)=>a.name.localeCompare(b.name))
       this.entity_name[0] = 'root';
     },
+    handleContainerChanged(data:any)
+    {
+      // this.data.containing = data
+      for(const i in this.entity)
+      {
+        this.entity[i].containing_read_only = this.entity[i].containing_read_only.filter(item=>item.id_entity_container != this.data.id)
+      }
+      for(const i in data)
+      {
+        const entity = this.entity.find(item=>item.id == data[i].id_entity_content)
+        entity?.containing_read_only.push({
+          id:0,
+          id_entity_container:this.data.id
+        })
+      }
+    }
   },
-  computed:{
-    sorted_data(){
-      const entity = JSON.parse(JSON.stringify(this.entity))
-      return entity.sort((a:entity,b:entity)=>a.name.localeCompare(b.name))
-    },
-  }
 }) 
 </script>
 <style scoped>
