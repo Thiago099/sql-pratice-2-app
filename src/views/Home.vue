@@ -91,6 +91,7 @@
         </button>
       </div>
     </div>
+  <popup-control ref="popupControl"></popup-control>
   </div>
 </template>
 
@@ -100,6 +101,8 @@ import nodeTree from '@/components/node-tree.vue'
 import { defineComponent } from 'vue';
 import axios from '@/global/http'
 import multiSelect from '@/components/multi-select.vue'
+import popupControl from '@/components/popup-control.vue'
+
 
 interface generalization {
   id: number,
@@ -127,7 +130,8 @@ export default defineComponent({
   components:{
     nodeTree,
     inputContainer,
-    multiSelect
+    multiSelect,
+    popupControl
   },
  
   data(){
@@ -164,6 +168,8 @@ export default defineComponent({
       }
       this.load()
       this.data = null
+      const popupControl = this.$refs.popupControl as any;
+      popupControl.addMessage('Salvo com sucesso.','success')
     },
     handleNew()
     {
@@ -222,4 +228,5 @@ export default defineComponent({
   font-size: 15pt;
   padding: 5px;
 }
+
 </style>

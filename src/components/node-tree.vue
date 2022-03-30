@@ -2,7 +2,7 @@
     <div>
         <i class="fa fa-minus-square hover warning icon" @click="collapse_all()"></i>
         <i class="fa fa-plus-square hover warning icon" @click="expand_all()"></i>
-        <div v-for="{item, depth,children, parent} in displayData" :key="item.id">
+        <div v-for="{item, depth,children, parent, tid} in displayData" :key="item.id">
             <div 
                 v-html="tabs(depth)" 
                 style="display:inline"
@@ -11,16 +11,16 @@
             <i 
             v-if="is_displayed(parent)"
             class="fa warning hover" 
-            :class="{'fa-caret-down':displayed[item.id],'fa-caret-right':!displayed[item.id],'invisible':children == 0 || children == undefined}" 
+            :class="{'fa-caret-down':displayed[tid],'fa-caret-right':!displayed[tid],'invisible':children == 0 || children == undefined}" 
             style="margin-right:5px"
-            @click="displayed[item.id] = !displayed[item.id]"
+            @click="displayed[tid] = !displayed[tid]"
             ></i>
             <span 
             class="hover" 
             v-if="is_displayed(parent)"
             :class="{'success':filter_function=='abstraction_filter','info':filter_function == 'containing_filter'}" 
             @click="$emit('action',item)" 
-            draggable="true"
+            :draggable="item.id != 0"
             @dragstart="function drag(ev){
                 ev.dataTransfer.setData('text', item.id)
             }"
@@ -78,20 +78,23 @@ export default defineComponent({
             }
             return result;
         },
-        get_tree(depth = 0, filter = null){
+        get_tree(depth = 0, filter = null,tid = {id:null}){
             var result = []
+            
+            const ptid = tid.id
             for(const i in this.data)
             {
                 if(this[this.filter_function](this.data[i],filter))
                 {
-                    const children = this.get_tree(depth+1, this.data[i].id)
-                    if(this.displayed[this.data[i].id] == undefined)
+                    const ctid = ++tid.id
+                    const children = this.get_tree(depth+1, this.data[i].id,tid)
+                    if(this.displayed[ctid] == undefined)
                     {
-                        this.displayed[this.data[i].id] = false
+                        this.displayed[ctid] = false
                     }
                     if(depth != 0 || children.length != 0)
                     {
-                        result.push({depth,item:this.data[i],children:children.length,parent:filter})
+                        result.push({depth,item:this.data[i],children:children.length,parent:ptid,tid:ctid})
                         result = result.concat(children)   
                     }
                 }
@@ -122,7 +125,7 @@ export default defineComponent({
                                 ).length == 0
                     )
                     {
-                        result.push({depth,item:this.data[i]})
+                        result.push({depth,item:this.data[i],tid:tid++})
                     }
                 }
             }
@@ -168,7 +171,7 @@ export default defineComponent({
         },
         is_displayed(parent)
         {
-            const parent_obj = this.displayData.find(item => item.item.id == parent)
+            const parent_obj = this.displayData.find(item => item.tid == parent)
             if(parent == null)
             {
                 return true
