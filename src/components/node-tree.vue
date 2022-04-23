@@ -99,16 +99,16 @@ export default defineComponent({
                     }
                 }
             }
-            // show illegal nodes that whuld not otherwise apear
+            // show illegal nodes that would not otherwise aper
             if(depth == 0)
             {
                 for(const i in this.data)
                 {
                     if
                     (
-                        !this.data[i].delete &&
+                          !this.data[i].delete &&
                            this.data[i].generalization.filter(item => !item.delete && item.id_entity_generic != null).length == 0 
-                        && this.data[i].containing.filter(item => !item.delete && item.id_entity_container != null).length == 0
+                        && this.data[i].containing_read_only.filter(item => !item.delete && item.id_entity_container != null).length == 0
                         && this.data.filter(item => 
                               !item.delete 
                             && item.generalization.filter(item => 
@@ -125,6 +125,7 @@ export default defineComponent({
                                 ).length == 0
                     )
                     {
+                        console.log(this.data[i])
                         result.push({depth,item:this.data[i],tid:tid++})
                     }
                 }
